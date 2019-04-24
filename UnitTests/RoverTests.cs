@@ -1,29 +1,93 @@
-﻿using FluentAssertions;
-using System;
+﻿using Akka.Actor;
+using Akka.TestKit.Xunit2;
+using FluentAssertions;
 using Xunit;
 using Zip.MarsRover.Core;
 
 namespace Zip.MarsRover.UnitTests
 {
-    public class RoverTests
+    public class RoverTests : TestKit
     {
         [Fact]
-        public void InvalidArgumentExceptions()
+        public void DefiningPlateau()
         {
-            Action action = () => new Rover<int>(null, null);
-            action.Should().Throw<ArgumentNullException>();
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("5 5");
+            var result = ExpectMsg<OperationResult>();
+            result.Successful.Should().BeTrue();
+            result.Result.Should().Be(RoverMessages.PlateauSet);
+        }
 
-            action = () => new Rover<int>(new Coord<int>(1, 1), null);
-            action.Should().Throw<ArgumentNullException>();
+        [Fact]
+        public void RedefinePlateau_should_fail()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("5 5");
+            rover.Tell("5 6");
+            var firstResult = ExpectMsg<OperationResult>();
+            firstResult.Successful.Should().BeTrue();
+            var SecondResult = ExpectMsg<OperationResult>();
+            SecondResult.Failed.Should().BeTrue();
+            SecondResult.Error.Should().Be(RoverErrors.PlateauDoubleSetError);
+        }
 
-            action = () => new Rover<int>(null, new RectPlateau<int>(new Coord<int>(2, 2)));
-            action.Should().Throw<ArgumentNullException>();
+        [Fact]
+        public void Setting_rover_initials_before_defining_Plateau_should_fail()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("1 2 N");
+            var result = ExpectMsg<OperationResult>();
+            result.Failed.Should().BeTrue();
+            result.Error.Should().Be(RoverErrors.SettingRoverLocationBeforeDefiningPlateau);
+        }
 
-            action = () => new Rover<int>(new Coord<int>(3, 3), new RectPlateau<int>(new Coord<int>(2, 2)));
-            action.Should().Throw<ArgumentOutOfRangeException>();
+        [Fact]
+        public void Moving_rover_before_defining_Plateau_should_fail()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("LM");
+            var result = ExpectMsg<OperationResult>();
+            result.Failed.Should().BeTrue();
+            result.Error.Should().Be(RoverErrors.MovingRoverBeforeDefiningPlateau);
+        }
 
-            action = () => new Rover<int>(new Coord<int>(1, 1), new RectPlateau<int>(new Coord<int>(2, 2)));
-            action.Should().NotThrow<ArgumentNullException>();
+        [Fact]
+        public void Moving_rover_before_setting_position_should_fail()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("5 5");
+            rover.Tell("LM");
+            var firstResult = ExpectMsg<OperationResult>();
+            var secondResult = ExpectMsg<OperationResult>();
+            secondResult.Failed.Should().BeTrue();
+            secondResult.Error.Should().Be(RoverErrors.MovingRoverBeforeSettingInitialPosition);
+        }
+
+        [Fact]
+        public void Set_rover_plateu_set_position()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("5 5");
+            rover.Tell("1 2 N");
+            var firtsResult = ExpectMsg<OperationResult>();
+            firtsResult.Successful.Should().BeTrue();
+            var secondResult = ExpectMsg<OperationResult>();
+            secondResult.Successful.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Set_rover_plateu_set_position_and_move()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            rover.Tell("5 5");
+            rover.Tell("1 2 N");
+            rover.Tell("LM");
+            var firtsResult = ExpectMsg<OperationResult>();
+            firtsResult.Successful.Should().BeTrue();
+            var secondResult = ExpectMsg<OperationResult>();
+            secondResult.Successful.Should().BeTrue();
+            var thirdResult = ExpectMsg<OperationResult>();
+            thirdResult.Successful.Should().BeTrue();
         }
     }
 }
