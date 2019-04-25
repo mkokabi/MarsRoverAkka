@@ -1,12 +1,22 @@
-﻿using System;
+﻿using Akka.Actor;
+using Zip.MarsRover.Core;
 
-namespace ConsoleApp
+namespace Zip.MarsRover.ConsoleApp
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            ActorSystem MyActorSystem = ActorSystem.Create("MyActorSystem");
+            var rover = MyActorSystem.ActorOf<Rover>();
+            var consoleReader = MyActorSystem.ActorOf(Props.Create(() => new Console(rover)));
+
+            // tell console reader to begin
+            consoleReader.Tell("start");
+
+            // blocks the main thread from exiting until the actor system is shut down
+            MyActorSystem.WhenTerminated.Wait();
         }
     }
 }

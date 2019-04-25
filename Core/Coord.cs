@@ -34,7 +34,7 @@ namespace Zip.MarsRover.Core
 
         public override string ToString()
         {
-            return base.ToString();
+            return $"{X} {Y}";
         }
 
         private const string regex = @"^\s*[0-9,.,-]*\s*[0-9,.,-]*\s*$";

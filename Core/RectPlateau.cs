@@ -22,6 +22,16 @@ namespace Zip.MarsRover.Core
                 && rectPlateau.Coords.Last().Equals(this.Coords.Last());
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Coords.First()} {Coords.Last()}";
+        }
+
         public override bool IsInside(Coord coord)
         {
             var lowerLeft = this.Coords.First();

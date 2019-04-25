@@ -42,6 +42,11 @@ namespace Zip.MarsRover.Core
             return base.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return $"{Coord} {Direction}";
+        }
+
         public static bool IsPosition(string st) => Regex.Match(st, regex).Success;
 
         public static bool TryParse(string st, out Position position)
