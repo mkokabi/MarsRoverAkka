@@ -30,6 +30,18 @@ namespace Zip.MarsRover.Core
 
         private const string regex = @"^\s*[0-9,.,-]*\s*[0-9,.,-]*\s*[N,E,S,W]\s*$";
 
+        public override bool Equals(object obj)
+        {
+            return (obj is Position position)
+                && position.Coord.Equals(this.Coord)
+                && position.Direction == this.Direction;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public static bool IsPosition(string st) => Regex.Match(st, regex).Success;
 
         public static bool TryParse(string st, out Position position)

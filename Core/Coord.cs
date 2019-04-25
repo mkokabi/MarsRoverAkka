@@ -16,8 +16,9 @@ namespace Zip.MarsRover.Core
 
         public override bool Equals(object obj)
         {
-            var coord = obj as Coord;
-            return (coord != null) && coord.X.Equals(this.X) && coord.Y.Equals(this.Y);
+            return (obj is Coord coord) 
+                && coord.X.Equals(this.X) 
+                && coord.Y.Equals(this.Y);
         }
 
         public override int GetHashCode()
@@ -25,8 +26,8 @@ namespace Zip.MarsRover.Core
             unchecked // Overflow is fine, just wrap
             {
                 int hash = 17;
-                hash = hash * 23 + (X != null ? X.GetHashCode() : 0);
-                hash = hash * 23 + (Y != null ? Y.GetHashCode() : 0);
+                hash = hash * 23 + X.GetHashCode();
+                hash = hash * 23 + Y.GetHashCode();
                 return hash;
             }
         }

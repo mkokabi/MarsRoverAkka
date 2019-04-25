@@ -13,9 +13,9 @@ namespace Zip.MarsRover.UnitTests
         {
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
-            var result = ExpectMsg<OperationResult>();
-            result.Successful.Should().BeTrue();
+            var result = ExpectMsg<PlateauSetOperationResult>();
             result.Result.Should().Be(RoverMessages.PlateauSet);
+            result.Plateau.Should().Be(new RectPlateau(new Coord(5, 5)));
         }
 
         [Fact]
@@ -24,10 +24,8 @@ namespace Zip.MarsRover.UnitTests
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("5 6");
-            var firstResult = ExpectMsg<OperationResult>();
-            firstResult.Successful.Should().BeTrue();
-            var SecondResult = ExpectMsg<OperationResult>();
-            SecondResult.Failed.Should().BeTrue();
+            var firstResult = ExpectMsg<SuccessOperationResult>();
+            var SecondResult = ExpectMsg<FailOperationResult>();
             SecondResult.Error.Should().Be(RoverErrors.PlateauDoubleSetError);
         }
 
@@ -36,8 +34,7 @@ namespace Zip.MarsRover.UnitTests
         {
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("1 2 N");
-            var result = ExpectMsg<OperationResult>();
-            result.Failed.Should().BeTrue();
+            var result = ExpectMsg<FailOperationResult>();
             result.Error.Should().Be(RoverErrors.SettingRoverLocationBeforeDefiningPlateau);
         }
 
@@ -46,8 +43,7 @@ namespace Zip.MarsRover.UnitTests
         {
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("LM");
-            var result = ExpectMsg<OperationResult>();
-            result.Failed.Should().BeTrue();
+            var result = ExpectMsg<FailOperationResult>();
             result.Error.Should().Be(RoverErrors.MovingRoverBeforeDefiningPlateau);
         }
 
@@ -57,9 +53,8 @@ namespace Zip.MarsRover.UnitTests
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("LM");
-            var firstResult = ExpectMsg<OperationResult>();
-            var secondResult = ExpectMsg<OperationResult>();
-            secondResult.Failed.Should().BeTrue();
+            var firstResult = ExpectMsg<SuccessOperationResult>();
+            var secondResult = ExpectMsg<FailOperationResult>();
             secondResult.Error.Should().Be(RoverErrors.MovingRoverBeforeSettingInitialPosition);
         }
 
@@ -69,25 +64,27 @@ namespace Zip.MarsRover.UnitTests
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("1 2 N");
-            var firtsResult = ExpectMsg<OperationResult>();
-            firtsResult.Successful.Should().BeTrue();
-            var secondResult = ExpectMsg<OperationResult>();
-            secondResult.Successful.Should().BeTrue();
+            var firtsResult = ExpectMsg<SuccessOperationResult>();
+            var secondResult = ExpectMsg<InitialPositionSetOperationResult>();
+            secondResult.Position.Should().Be(new Position(1, 2, Direction.N));
         }
 
-        [Fact]
-        public void Set_rover_plateu_set_position_and_move()
+        [Theory]
+        [InlineData("5 5", "1 2 N", "M", 1, 3, Direction.N)]
+        [InlineData("5 5", "1 2 N", "ML", 1, 3, Direction.W)]
+        [InlineData("5 5", "1 2 N", "MR", 1, 3, Direction.E)]
+        [InlineData("5 5", "1 2 N", "MRM", 2, 3, Direction.E)]
+        public void Set_rover_plateu_set_position_and_move(string plateau, string initialPos, string move, 
+            int newX, int newY, Direction newDirection)
         {
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
-            rover.Tell("5 5");
-            rover.Tell("1 2 N");
-            rover.Tell("LM");
-            var firtsResult = ExpectMsg<OperationResult>();
-            firtsResult.Successful.Should().BeTrue();
-            var secondResult = ExpectMsg<OperationResult>();
-            secondResult.Successful.Should().BeTrue();
-            var thirdResult = ExpectMsg<OperationResult>();
-            thirdResult.Successful.Should().BeTrue();
+            rover.Tell(plateau);
+            rover.Tell(initialPos);
+            rover.Tell(move);
+            var firtsResult = ExpectMsg<SuccessOperationResult>();
+            var secondResult = ExpectMsg<SuccessOperationResult>();
+            var thirdResult = ExpectMsg<MovedOperationResult>();
+            thirdResult.Position.Should().Be(new Position(newX, newY, newDirection));
         }
     }
 }

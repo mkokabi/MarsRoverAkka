@@ -10,7 +10,9 @@ namespace Zip.MarsRover.Core
         public const string MovingRoverBeforeDefiningPlateau = "Before moving rover, first plateau should be defined.";
         public const string MovingRoverBeforeSettingInitialPosition = "Before moving rover, first set initial position.";
         public const string FirstPoistionOutOfPlateauError = "Rover can not start out of plateau.";
+        public const string MovingRoverOutOfPlateauError = "Rover can not go out of plateau.";
     }
+
     public class RoverMessages
     {
         public const string PlateauSet = "Rover's plateau set.";
@@ -24,7 +26,7 @@ namespace Zip.MarsRover.Core
 
         public Position Position { get; private set; }
 
-        public AbstractPlateau Plateau { get; private set; }
+        public Plateau Plateau { get; private set; }
 
         private Position initialPosition;
 
@@ -45,7 +47,7 @@ namespace Zip.MarsRover.Core
             {
                 Coord.TryParse(msg, out Coord coord);
                 Plateau = new RectPlateau(coord);
-                Sender.Tell(new SuccessOperationResult(RoverMessages.PlateauSet));
+                Sender.Tell(new PlateauSetOperationResult(Plateau));
             }
             else
             {
@@ -53,6 +55,10 @@ namespace Zip.MarsRover.Core
             }
         }
 
+        /// <summary>
+        /// Setting initial position should be after defining plateau
+        /// </summary>
+        /// <param name="msg"></param>
         private void SetInitialPoistion(string msg)
         {
             if (Plateau == null)
@@ -62,7 +68,8 @@ namespace Zip.MarsRover.Core
             else
             {
                 Position.TryParse(msg, out initialPosition);
-                Sender.Tell(new SuccessOperationResult(RoverMessages.PoistionSet));
+                Position = initialPosition;
+                Sender.Tell(new InitialPositionSetOperationResult(initialPosition));
             }
         }
 
@@ -70,7 +77,7 @@ namespace Zip.MarsRover.Core
         /// Move should be after defining the plateau and shouldn't take the rover out of the plateau
         /// </summary>
         /// <param name="message"></param>
-        private void Move(string message)
+        private void Move(string msg)
         {
             if (Plateau == null)
             {
@@ -82,14 +89,20 @@ namespace Zip.MarsRover.Core
                 Sender.Tell(new FailOperationResult(RoverErrors.MovingRoverBeforeSettingInitialPosition));
                 return;
             }
-            //var newCoord = initialPosition.Move( Coord.Transfer
-            //if (!Plateau.IsInside(initialCoord))
-            //{
-            //    throw new ArgumentOutOfRangeException("The initial coordinate should be in the plateau");
-            //}
+            var prevPosition = Position;
+            foreach (var move in msg)
+            {
+                Position.Transfer((TransferType)Enum.Parse(typeof(TransferType), move.ToString(), ignoreCase: true));
+            }
+
+            if (!Plateau.IsInside(Position.Coord))
+            {
+                Position = prevPosition;
+                Sender.Tell(new FailOperationResult(RoverErrors.MovingRoverOutOfPlateauError));
+            }
             else
             {
-                Sender.Tell(new SuccessOperationResult(RoverMessages.Moved));
+                Sender.Tell(new MovedOperationResult(Position));
             }
         }
     }

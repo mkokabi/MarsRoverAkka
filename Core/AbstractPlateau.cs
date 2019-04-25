@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Zip.MarsRover.Core
 {
-    public abstract class AbstractPlateau : IPlateauValidations
+    public abstract class Plateau : IPlateauValidations, IPlateau
     {
-        public AbstractPlateau(IEnumerable<Coord> coords)
+        public Plateau(IEnumerable<Coord> coords)
         {
             Coords = coords;
         }
