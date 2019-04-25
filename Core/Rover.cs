@@ -18,21 +18,20 @@ namespace Zip.MarsRover.Core
         public const string Moved = "Rover moved.";
     }
 
-    public class Rover<Type> : ReceiveActor
-        where Type : IComparable<Type>
+    public class Rover : ReceiveActor
     {
-        public Position<Type> InitialPosition { get => initialPosition; private set => initialPosition = value; }
+        public Position InitialPosition { get => initialPosition; private set => initialPosition = value; }
 
-        public Position<Type> Position { get; private set; }
+        public Position Position { get; private set; }
 
-        public AbstractPlateau<Type> Plateau { get; private set; }
+        public AbstractPlateau Plateau { get; private set; }
 
-        private Position<Type> initialPosition;
+        private Position initialPosition;
 
         public Rover()
         {
-            Receive<string>(msg => DefinePlateau(msg), msg => Coord<int>.IsCoord(msg));
-            Receive<string>(msg => SetInitialPoistion(msg), msg => Position<Type>.IsPosition(msg));
+            Receive<string>(msg => DefinePlateau(msg), msg => Coord.IsCoord(msg));
+            Receive<string>(msg => SetInitialPoistion(msg), msg => Position.IsPosition(msg));
             Receive<string>(msg => Move(msg));
         }
 
@@ -44,8 +43,8 @@ namespace Zip.MarsRover.Core
         {
             if (Plateau == null)
             {
-                Coord<Type>.TryParse<Type>(msg, out Coord<Type> coord);
-                Plateau = new RectPlateau<Type>(coord);
+                Coord.TryParse(msg, out Coord coord);
+                Plateau = new RectPlateau(coord);
                 Sender.Tell(new SuccessOperationResult(RoverMessages.PlateauSet));
             }
             else
@@ -62,7 +61,7 @@ namespace Zip.MarsRover.Core
             }
             else
             {
-                Position<Type>.TryParse<Type>(msg, out initialPosition);
+                Position.TryParse(msg, out initialPosition);
                 Sender.Tell(new SuccessOperationResult(RoverMessages.PoistionSet));
             }
         }

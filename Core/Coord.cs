@@ -3,12 +3,12 @@ using System.Text.RegularExpressions;
 
 namespace Zip.MarsRover.Core
 {
-    public class Coord<Type> where Type : IComparable<Type>
+    public class Coord
     {
-        public Type X { get; private set; }
-        public Type Y { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
-        public Coord(Type x, Type y)
+        public Coord(int x, int y)
         {
             X = x;
             Y = y;
@@ -16,7 +16,7 @@ namespace Zip.MarsRover.Core
 
         public override bool Equals(object obj)
         {
-            var coord = obj as Coord<Type>;
+            var coord = obj as Coord;
             return (coord != null) && coord.X.Equals(this.X) && coord.Y.Equals(this.Y);
         }
 
@@ -40,8 +40,7 @@ namespace Zip.MarsRover.Core
 
         public static bool IsCoord(string st) => Regex.Match(st, regex).Success;
         
-        public static bool TryParse<CType>(string st, out Coord<Type> coord)
-            where CType: IComparable<Type>
+        public static bool TryParse(string st, out Coord coord)
         {
             if (!IsCoord(st))
             {
@@ -50,9 +49,9 @@ namespace Zip.MarsRover.Core
             }
             var parts = st.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            Type x = (Type)Convert.ChangeType(parts[0], typeof(Type));
-            Type y = (Type)Convert.ChangeType(parts[1], typeof(Type));
-            coord = new Coord<Type>(x, y);
+            int x = int.Parse(parts[0]);
+            int y = int.Parse(parts[1]);
+            coord = new Coord(x, y);
 
             return true;
         }

@@ -11,7 +11,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void DefiningPlateau()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             var result = ExpectMsg<OperationResult>();
             result.Successful.Should().BeTrue();
@@ -21,7 +21,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void RedefinePlateau_should_fail()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("5 6");
             var firstResult = ExpectMsg<OperationResult>();
@@ -34,7 +34,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void Setting_rover_initials_before_defining_Plateau_should_fail()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("1 2 N");
             var result = ExpectMsg<OperationResult>();
             result.Failed.Should().BeTrue();
@@ -44,7 +44,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void Moving_rover_before_defining_Plateau_should_fail()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("LM");
             var result = ExpectMsg<OperationResult>();
             result.Failed.Should().BeTrue();
@@ -54,7 +54,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void Moving_rover_before_setting_position_should_fail()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("LM");
             var firstResult = ExpectMsg<OperationResult>();
@@ -66,7 +66,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void Set_rover_plateu_set_position()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("1 2 N");
             var firtsResult = ExpectMsg<OperationResult>();
@@ -78,7 +78,7 @@ namespace Zip.MarsRover.UnitTests
         [Fact]
         public void Set_rover_plateu_set_position_and_move()
         {
-            var rover = Sys.ActorOf(Props.Create(() => new Rover<int>()));
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("5 5");
             rover.Tell("1 2 N");
             rover.Tell("LM");

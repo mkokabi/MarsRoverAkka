@@ -3,19 +3,19 @@ using System.Linq;
 
 namespace Zip.MarsRover.Core
 {
-    public class RectPlateau<Type> : AbstractPlateau<Type> where Type : IComparable<Type>
+    public class RectPlateau : AbstractPlateau 
     {
-        public RectPlateau(Coord<Type> upperRight) :
-            base(new[] { new Coord<Type>(default(Type), default(Type)), upperRight })
+        public RectPlateau(Coord upperRight) :
+            base(new[] { new Coord(default(int), default(int)), upperRight })
         {
         }
 
-        public RectPlateau(Coord<Type> lowerLeft, Coord<Type> upperRight) :
+        public RectPlateau(Coord lowerLeft, Coord upperRight) :
             base(new[] { lowerLeft, upperRight })
         {
         }
 
-        public override bool IsInside(Coord<Type> coord)
+        public override bool IsInside(Coord coord)
         {
             var lowerLeft = this.Coords.First();
             var upperRight = this.Coords.Last();

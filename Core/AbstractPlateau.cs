@@ -4,16 +4,15 @@ using System.Text;
 
 namespace Zip.MarsRover.Core
 {
-    public abstract class AbstractPlateau<Type> : IPlateauValidations<Type>
-        where Type: IComparable<Type>
+    public abstract class AbstractPlateau : IPlateauValidations
     {
-        public AbstractPlateau(IEnumerable<Coord<Type>> coords)
+        public AbstractPlateau(IEnumerable<Coord> coords)
         {
             Coords = coords;
         }
 
-        public IEnumerable<Coord<Type>> Coords { get; }
+        public IEnumerable<Coord> Coords { get; }
 
-        public abstract bool IsInside(Coord<Type> coord);
+        public abstract bool IsInside(Coord coord);
     }
 }

@@ -1,7 +1,4 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using Zip.MarsRover.Core;
 
@@ -12,14 +9,31 @@ namespace Zip.MarsRover.UnitTests
         [Theory]
         [InlineData("5 10 E", true, 5, 10, Direction.E)]
         [InlineData("-5 10 N", true, -5, 10, Direction.N)]
-        [InlineData("4.75 10.25 S", true, 4.75, 10.25, Direction.S)]
         [InlineData("  5  10  E  ", true, 5, 10, Direction.E)]
-        public void Parse(string input, bool result, double x, double y, Direction direction)
+        public void Parse(string input, bool result, int x, int y, Direction direction)
         {
-            Position<double>.TryParse<double>(input, out Position<double> position).Should().Be(result);
+            Position.TryParse(input, out Position position).Should().Be(result);
             position.Coord.X.Should().Be(x);
             position.Coord.Y.Should().Be(y);
             position.Direction.Should().Be(direction);
+        }
+
+        [Theory]
+        [InlineData(1, 1, Direction.N, TransferType.M, 1, 2, Direction.N)]
+        [InlineData(1, 1, Direction.E, TransferType.M, 2, 1, Direction.E)]
+        [InlineData(1, 1, Direction.S, TransferType.M, 1, 0, Direction.S)]
+        [InlineData(1, 1, Direction.W, TransferType.M, 0, 1, Direction.W)]
+        [InlineData(1, 1, Direction.N, TransferType.L, 1, 1, Direction.W)]
+        [InlineData(1, 1, Direction.N, TransferType.R, 1, 1, Direction.E)]
+        [InlineData(1, 1, Direction.W, TransferType.L, 1, 1, Direction.S)]
+        [InlineData(1, 1, Direction.W, TransferType.R, 1, 1, Direction.N)]
+        public void Transfer(int x, int y, Direction direction, TransferType transfer, int newX, int newY, Direction newDirection)
+        {
+            var position = new Position(x, y, direction);
+            position.Transfer(transfer);
+            position.Coord.X.Should().Be(newX);
+            position.Coord.Y.Should().Be(newY);
+            position.Direction.Should().Be(newDirection);
         }
     }
 }

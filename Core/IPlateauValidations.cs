@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace Zip.MarsRover.Core
+﻿namespace Zip.MarsRover.Core
 {
-    public interface IPlateauValidations<Type> where Type : IComparable<Type>
+    public interface IPlateauValidations
     {
-        bool IsInside(Coord<Type> coord);
+        bool IsInside(Coord coord);
     }
 }

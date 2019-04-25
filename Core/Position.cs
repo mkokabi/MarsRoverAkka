@@ -10,14 +10,21 @@ namespace Zip.MarsRover.Core
         N, E, S, W
     }
 
-    public class Position<Type> where Type : IComparable<Type>
+    public enum TransferType
     {
-        public Coord<Type> Coord { get; private set; }
-        public Direction Direction { get; set; }
+        M, // move at current direction
+        L, // turn left
+        R, // turn right
+    }
 
-        public Position(Type x, Type y, Direction direction)
+    public class Position
+    {
+        public Coord Coord { get; private set; }
+        public Direction Direction { get; private set; }
+
+        public Position(int x, int y, Direction direction)
         {
-            Coord = new Coord<Type>(x, y);
+            Coord = new Coord(x, y);
             Direction = direction;
         }
 
@@ -25,8 +32,7 @@ namespace Zip.MarsRover.Core
 
         public static bool IsPosition(string st) => Regex.Match(st, regex).Success;
 
-        public static bool TryParse<PType>(string st, out Position<Type> position)
-            where PType : IComparable<Type>
+        public static bool TryParse(string st, out Position position)
         {
             if (!IsPosition(st))
             {
@@ -35,12 +41,44 @@ namespace Zip.MarsRover.Core
             }
             var parts = st.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            Type x = (Type)Convert.ChangeType(parts[0], typeof(Type));
-            Type y = (Type)Convert.ChangeType(parts[1], typeof(Type));
+            int x = int.Parse(parts[0]);
+            int y = int.Parse(parts[1]);
             Direction d = (Direction)Enum.Parse(typeof(Direction), parts[2], true);
-            position = new Position<Type>(x, y, d);
+            position = new Position(x, y, d);
 
             return true;
+        }
+
+        public void Transfer(TransferType transferType)
+        {
+            switch (transferType)
+            {
+                case TransferType.M:
+                    switch (Direction)
+                    {
+                        case Direction.N:
+                            Coord = new Coord(Coord.X, Coord.Y + 1);
+                            break;
+                        case Direction.E:
+                            Coord = new Coord(Coord.X + 1, Coord.Y);
+                            break;
+                        case Direction.S:
+                            Coord = new Coord(Coord.X, Coord.Y - 1);
+                            break;
+                        case Direction.W:
+                            Coord = new Coord(Coord.X - 1, Coord.Y);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case TransferType.R:
+                    Direction = ((int)Direction < 3) ? Direction + 1 : Direction.N;
+                    break;
+                case TransferType.L:
+                    Direction = (Direction > 0) ? Direction - 1 : Direction.W;
+                    break;
+            }
         }
     }
 }
