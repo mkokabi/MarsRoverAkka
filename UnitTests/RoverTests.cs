@@ -74,6 +74,8 @@ namespace Zip.MarsRover.UnitTests
         [InlineData("5 5", "1 2 N", "ML", 1, 3, Direction.W)]
         [InlineData("5 5", "1 2 N", "MR", 1, 3, Direction.E)]
         [InlineData("5 5", "1 2 N", "MRM", 2, 3, Direction.E)]
+        [InlineData("5 5", "1 2 N", "LMLMLMLMM", 1, 3, Direction.N)]
+        [InlineData("5 5", "3 3 E", "MMRMMRMRRM", 5, 1, Direction.E)]
         public void Set_rover_plateu_set_position_and_move(string plateau, string initialPos, string move, 
             int newX, int newY, Direction newDirection)
         {
@@ -85,6 +87,19 @@ namespace Zip.MarsRover.UnitTests
             var secondResult = ExpectMsg<SuccessOperationResult>();
             var thirdResult = ExpectMsg<MovedOperationResult>();
             thirdResult.Position.Should().Be(new Position(newX, newY, newDirection));
+        }
+
+        [Fact]
+        public void Rover_moving_out_of_plateau_should_fail()
+        {
+            var rover = Sys.ActorOf(Props.Create(() => new Rover()));
+            rover.Tell("2 2");
+            rover.Tell("1 1 N");
+            rover.Tell("MM");
+            var firtsResult = ExpectMsg<SuccessOperationResult>();
+            var secondResult = ExpectMsg<SuccessOperationResult>();
+            var thirdResult = ExpectMsg<FailOperationResult>();
+            thirdResult.Error.Should().Be(RoverErrors.MovingRoverOutOfPlateauError);
         }
     }
 }

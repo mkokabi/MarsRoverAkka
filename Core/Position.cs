@@ -39,7 +39,13 @@ namespace Zip.MarsRover.Core
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+                hash = hash * 23 + Coord.GetHashCode();
+                hash = hash * 23 + Direction.GetHashCode();
+                return hash;
+            }
         }
 
         public override string ToString()
