@@ -1,13 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Zip.MarsRover.Core
 {
-    public enum Direction
+    public class Direction
     {
-        N, E, S, W
+        public const int N = 0;
+        public const int E = 1;
+        public const int S = 2;
+        public const int W = 3;
+
+        public static implicit operator Direction(int v) => new Direction { value = v };
+
+        private int value;
+
+        public static explicit operator int(Direction d) => d.value;
+        public static Direction operator +(Direction d, int v) => new Direction { value = d.value + v };
+        public static Direction operator -(Direction d, int v) => new Direction { value = d.value - v };
+        public static bool operator <(Direction d, int v) => d.value < v;
+        public static bool operator >(Direction d, int v) => d.value > v;
     }
 
     public enum TransferType
@@ -72,28 +84,49 @@ namespace Zip.MarsRover.Core
             return true;
         }
 
+        //public Lazy<Dictionary<Direction, Func<Coord, Coord>>> DirectionalMoves = 
+        //    new Lazy<Dictionary<Direction, Func<Coord, Coord>>>
+        //    (() => new Dictionary<Direction, Func<Coord, Coord>> {
+        //        { Direction.N, coord =>  new Coord(coord.X, coord.Y + 1)},
+        //        { Direction.E, coord =>  new Coord(coord.X + 1, coord.Y)},
+        //        { Direction.S, coord =>  new Coord(coord.X, coord.Y - 1)},
+        //        { Direction.W, coord =>  new Coord(coord.X - 1, coord.Y)},
+        //    });
+
+        Dictionary<Direction, Func<Coord, Coord>> DirectionalMoves = 
+            new Dictionary<Direction, Func<Coord, Coord>> {
+                { Direction.N, coord => new Coord(coord.X, coord.Y + 1)},
+                { Direction.E, coord => new Coord(coord.X + 1, coord.Y)},
+                { Direction.S, coord => new Coord(coord.X, coord.Y - 1)},
+                { Direction.W, coord => new Coord(coord.X - 1, coord.Y)},
+        };
+
         public void Transfer(TransferType transferType)
         {
             switch (transferType)
             {
                 case TransferType.M:
-                    switch (Direction)
+                    if (DirectionalMoves.TryGetValue(Direction, out Func<Coord, Coord> func))
                     {
-                        case Direction.N:
-                            Coord = new Coord(Coord.X, Coord.Y + 1);
-                            break;
-                        case Direction.E:
-                            Coord = new Coord(Coord.X + 1, Coord.Y);
-                            break;
-                        case Direction.S:
-                            Coord = new Coord(Coord.X, Coord.Y - 1);
-                            break;
-                        case Direction.W:
-                            Coord = new Coord(Coord.X - 1, Coord.Y);
-                            break;
-                        default:
-                            break;
+                        Coord = func(Coord);
                     }
+                    //switch (Direction)
+                    //{
+                    //    case Direction.N:
+                    //        Coord = new Coord(Coord.X, Coord.Y + 1);
+                    //        break;
+                    //    case Direction.E:
+                    //        Coord = new Coord(Coord.X + 1, Coord.Y);
+                    //        break;
+                    //    case Direction.S:
+                    //        Coord = new Coord(Coord.X, Coord.Y - 1);
+                    //        break;
+                    //    case Direction.W:
+                    //        Coord = new Coord(Coord.X - 1, Coord.Y);
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
                     break;
                 case TransferType.R:
                     Direction = ((int)Direction < 3) ? Direction + 1 : Direction.N;
