@@ -20,6 +20,18 @@ namespace Zip.MarsRover.Core
         public static Direction operator -(Direction d, int v) => new Direction { value = d.value - v };
         public static bool operator <(Direction d, int v) => d.value < v;
         public static bool operator >(Direction d, int v) => d.value > v;
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+        public override bool Equals(object obj)
+        {
+            return (obj is Direction direction) && direction.value == value;
+        }
+        public override int GetHashCode()
+        {
+            return value.GetHashCode();
+        }
     }
 
     public enum TransferType
@@ -46,7 +58,7 @@ namespace Zip.MarsRover.Core
         {
             return (obj is Position position)
                 && position.Coord.Equals(this.Coord)
-                && position.Direction == this.Direction;
+                && position.Direction.Equals(this.Direction);
         }
 
         public override int GetHashCode()
@@ -67,6 +79,14 @@ namespace Zip.MarsRover.Core
 
         public static bool IsPosition(string st) => Regex.Match(st, regex).Success;
 
+        static Dictionary<string, Direction> directionNames = new Dictionary<string, Direction>
+        {
+            { "N", Direction.N },
+            { "E", Direction.E },
+            { "S", Direction.S },
+            { "W", Direction.W },
+        };
+
         public static bool TryParse(string st, out Position position)
         {
             if (!IsPosition(st))
@@ -78,7 +98,7 @@ namespace Zip.MarsRover.Core
 
             int x = int.Parse(parts[0]);
             int y = int.Parse(parts[1]);
-            Direction d = (Direction)Enum.Parse(typeof(Direction), parts[2], true);
+            Direction d = directionNames[parts[2]];
             position = new Position(x, y, d);
 
             return true;

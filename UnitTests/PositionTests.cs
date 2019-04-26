@@ -10,12 +10,12 @@ namespace Zip.MarsRover.UnitTests
         [InlineData("5 10 E", true, 5, 10, Direction.E)]
         [InlineData("-5 10 N", true, -5, 10, Direction.N)]
         [InlineData("  5  10  E  ", true, 5, 10, Direction.E)]
-        public void Parse(string input, bool result, int x, int y, Direction direction)
+        public void Parse(string input, bool result, int x, int y, int direction)
         {
             Position.TryParse(input, out Position position).Should().Be(result);
             position.Coord.X.Should().Be(x);
             position.Coord.Y.Should().Be(y);
-            position.Direction.Should().Be(direction);
+            position.Direction.Should().Be((Direction)direction);
         }
 
         [Theory]
@@ -27,13 +27,13 @@ namespace Zip.MarsRover.UnitTests
         [InlineData(1, 1, Direction.N, TransferType.R, 1, 1, Direction.E)]
         [InlineData(1, 1, Direction.W, TransferType.L, 1, 1, Direction.S)]
         [InlineData(1, 1, Direction.W, TransferType.R, 1, 1, Direction.N)]
-        public void Transfer(int x, int y, Direction direction, TransferType transfer, int newX, int newY, Direction newDirection)
+        public void Transfer(int x, int y, int direction, TransferType transfer, int newX, int newY, int newDirection)
         {
             var position = new Position(x, y, direction);
             position.Transfer(transfer);
             position.Coord.X.Should().Be(newX);
             position.Coord.Y.Should().Be(newY);
-            position.Direction.Should().Be(newDirection);
+            position.Direction.Should().Be((Direction)newDirection);
         }
     }
 }

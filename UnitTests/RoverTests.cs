@@ -77,7 +77,7 @@ namespace Zip.MarsRover.UnitTests
         [InlineData("5 5", "1 2 N", "LMLMLMLMM", 1, 3, Direction.N)]
         [InlineData("5 5", "3 3 E", "MMRMMRMRRM", 5, 1, Direction.E)]
         public void Set_rover_plateu_set_position_and_move(string plateau, string initialPos, string move, 
-            int newX, int newY, Direction newDirection)
+            int newX, int newY, int newDirection)
         {
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell(plateau);
