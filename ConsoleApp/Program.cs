@@ -10,10 +10,10 @@ namespace Zip.MarsRover.ConsoleApp
         {
             ActorSystem MyActorSystem = ActorSystem.Create("MyActorSystem");
             var rover = MyActorSystem.ActorOf<Rover>();
-            var consoleReader = MyActorSystem.ActorOf(Props.Create(() => new Console(rover)));
+            var console = MyActorSystem.ActorOf(Props.Create(() => new Console(rover)));
 
             // tell console reader to begin
-            consoleReader.Tell("start");
+            console.Tell("start");
 
             // blocks the main thread from exiting until the actor system is shut down
             MyActorSystem.WhenTerminated.Wait();
