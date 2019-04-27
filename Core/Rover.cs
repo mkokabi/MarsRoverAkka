@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Akka.Persistence;
 using System;
 
 namespace Zip.MarsRover.Core
@@ -20,7 +21,7 @@ namespace Zip.MarsRover.Core
         public const string Moved = "Rover moved.";
     }
 
-    public class Rover : ReceiveActor
+    public class Rover : ReceivePersistentActor
     {
         public Position InitialPosition { get => initialPosition; private set => initialPosition = value; }
 
@@ -28,13 +29,19 @@ namespace Zip.MarsRover.Core
 
         public Plateau Plateau { get; private set; }
 
+        public override string PersistenceId => $"Rover Persistence ID";
+
         private Position initialPosition;
 
         public Rover()
         {
-            Receive<string>(msg => DefinePlateau(msg), msg => Coord.IsCoord(msg));
-            Receive<string>(msg => SetInitialPoistion(msg), msg => Position.IsPosition(msg));
-            Receive<string>(msg => Move(msg));
+            Recover<string>(msg => DefinePlateau(msg), msg => Coord.IsCoord(msg));
+            Recover<string>(msg => SetInitialPoistion(msg), msg => Position.IsPosition(msg));
+            Recover<string>(msg => Move(msg));
+
+            Command<string>(msg => Persist(msg, m => DefinePlateau(m)), msg => Coord.IsCoord(msg));
+            Command<string>(msg => Persist(msg, m => SetInitialPoistion(m)), msg => Position.IsPosition(msg));
+            Command<string>(msg => Persist(msg, m => Move(m)));
         }
 
         /// <summary>

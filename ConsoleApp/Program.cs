@@ -1,4 +1,6 @@
 ﻿using Akka.Actor;
+using Akka.Configuration;
+using System.IO;
 using Zip.MarsRover.Core;
 
 namespace Zip.MarsRover.ConsoleApp
@@ -8,7 +10,9 @@ namespace Zip.MarsRover.ConsoleApp
 
         static void Main(string[] args)
         {
-            ActorSystem MyActorSystem = ActorSystem.Create("MyActorSystem");
+            var config = ConfigurationFactory.ParseString(File.ReadAllText("Sql.conf"));
+
+            ActorSystem MyActorSystem = ActorSystem.Create("MyActorSystem", config);
             var rover = MyActorSystem.ActorOf<Rover>();
             var console = MyActorSystem.ActorOf(Props.Create(() => new Console(rover)));
 
