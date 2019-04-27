@@ -9,6 +9,8 @@ namespace Zip.MarsRover.UnitTests
         [Theory]
         [InlineData("5 10", true, 5, 10)]
         [InlineData("-5 10", true, -5, 10)]
+        [InlineData("5", false, -5, 10)]
+        [InlineData("5 45 6", false, -5, 10)]
         [InlineData("1 2 N", false, 0, 0)]
         [InlineData("  5  10  ", true, 5, 10)]
         public void Parse(string input, bool result, int x, int y)

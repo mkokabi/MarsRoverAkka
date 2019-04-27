@@ -7,11 +7,11 @@ namespace Zip.MarsRover.Core
     public class RoverErrors
     {
         public const string PlateauDoubleSetError = "Plateau can be only set in first command.";
-        public const string SettingRoverLocationBeforeDefiningPlateau = "First plateau should be defined.";
+        public const string SettingRoverLocationBeforeDefiningPlateau = "First, plateau should be defined.";
         public const string MovingRoverBeforeDefiningPlateau = "Before moving rover, first plateau should be defined.";
         public const string MovingRoverBeforeSettingInitialPosition = "Before moving rover, first set initial position.";
         public const string FirstPoistionOutOfPlateauError = "Rover can not start out of plateau.";
-        public const string MovingRoverOutOfPlateauError = "Rover can not go out of plateau.";
+        public const string MovingRoverOutOfPlateauError = "Rover can not go out of plateau. Last move has been reverted";
     }
 
     public class RoverMessages
@@ -35,12 +35,12 @@ namespace Zip.MarsRover.Core
 
         public Rover()
         {
-            Recover<string>(msg => DefinePlateau(msg), msg => Coord.IsCoord(msg));
-            Recover<string>(msg => SetInitialPoistion(msg), msg => Position.IsPosition(msg));
+            Recover<string>(msg => DefinePlateau(msg), msg => msg.IsCoord());
+            Recover<string>(msg => SetInitialPoistion(msg), msg => msg.IsPosition());
             Recover<string>(msg => Move(msg));
 
-            Command<string>(msg => Persist(msg, m => DefinePlateau(m)), msg => Coord.IsCoord(msg));
-            Command<string>(msg => Persist(msg, m => SetInitialPoistion(m)), msg => Position.IsPosition(msg));
+            Command<string>(msg => Persist(msg, m => DefinePlateau(m)), msg => msg.IsCoord());
+            Command<string>(msg => Persist(msg, m => SetInitialPoistion(m)), msg => msg.IsPosition());
             Command<string>(msg => Persist(msg, m => Move(m)));
         }
 
@@ -96,7 +96,7 @@ namespace Zip.MarsRover.Core
                 Sender.Tell(new FailOperationResult(RoverErrors.MovingRoverBeforeSettingInitialPosition));
                 return;
             }
-            var prevPosition = Position;
+            var prevPosition = new Position(Position.Coord.X, Position.Coord.Y, Position.Direction);
             foreach (var move in msg)
             {
                 Position.Transfer((TransferType)Enum.Parse(typeof(TransferType), move.ToString(), ignoreCase: true));

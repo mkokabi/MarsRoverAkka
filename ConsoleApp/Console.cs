@@ -29,6 +29,10 @@ namespace Zip.MarsRover.ConsoleApp
             {
                 System.Console.WriteLine(plateauSetOperationResult.Plateau);
             }
+            else if (message is FailOperationResult failOperationResult)
+            {
+                System.Console.WriteLine(failOperationResult.Error);
+            }
             else
             {
                 System.Console.WriteLine(message);
