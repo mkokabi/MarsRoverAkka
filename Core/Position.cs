@@ -11,27 +11,6 @@ namespace Zip.MarsRover.Core
         public const int S = 2;
         public const int W = 3;
 
-        public static implicit operator Direction(int v) => new Direction { value = v };
-
-        private int value;
-
-        public static explicit operator int(Direction d) => d.value;
-        public static Direction operator +(Direction d, int v) => new Direction { value = d.value + v };
-        public static Direction operator -(Direction d, int v) => new Direction { value = d.value - v };
-        public static bool operator <(Direction d, int v) => d.value < v;
-        public static bool operator >(Direction d, int v) => d.value > v;
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-        public override bool Equals(object obj)
-        {
-            return (obj is Direction direction) && direction.value == value;
-        }
-        public override int GetHashCode()
-        {
-            return value.GetHashCode();
-        }
     }
 
     public enum TransferType
@@ -44,9 +23,9 @@ namespace Zip.MarsRover.Core
     public class Position
     {
         public Coord Coord { get; private set; }
-        public Direction Direction { get; private set; }
+        public int Direction { get; private set; }
 
-        public Position(int x, int y, Direction direction)
+        public Position(int x, int y, int direction)
         {
             Coord = new Coord(x, y);
             Direction = direction;
@@ -79,12 +58,12 @@ namespace Zip.MarsRover.Core
 
         public static bool IsPosition(string st) => Regex.Match(st, regex).Success;
 
-        static Dictionary<string, Direction> directionNames = new Dictionary<string, Direction>
+        static Dictionary<string, int> directionNames = new Dictionary<string, int>()
         {
-            { "N", Direction.N },
-            { "E", Direction.E },
-            { "S", Direction.S },
-            { "W", Direction.W },
+            { "N", Core.Direction.N },
+            { "E", Core.Direction.E },
+            { "S", Core.Direction.S },
+            { "W", Core.Direction.W },
         };
 
         public static bool TryParse(string st, out Position position)
@@ -98,27 +77,18 @@ namespace Zip.MarsRover.Core
 
             int x = int.Parse(parts[0]);
             int y = int.Parse(parts[1]);
-            Direction d = directionNames[parts[2]];
+            int d = directionNames[parts[2]];
             position = new Position(x, y, d);
 
             return true;
         }
 
-        //public Lazy<Dictionary<Direction, Func<Coord, Coord>>> DirectionalMoves = 
-        //    new Lazy<Dictionary<Direction, Func<Coord, Coord>>>
-        //    (() => new Dictionary<Direction, Func<Coord, Coord>> {
-        //        { Direction.N, coord =>  new Coord(coord.X, coord.Y + 1)},
-        //        { Direction.E, coord =>  new Coord(coord.X + 1, coord.Y)},
-        //        { Direction.S, coord =>  new Coord(coord.X, coord.Y - 1)},
-        //        { Direction.W, coord =>  new Coord(coord.X - 1, coord.Y)},
-        //    });
-
-        Dictionary<Direction, Func<Coord, Coord>> DirectionalMoves = 
-            new Dictionary<Direction, Func<Coord, Coord>> {
-                { Direction.N, coord => new Coord(coord.X, coord.Y + 1)},
-                { Direction.E, coord => new Coord(coord.X + 1, coord.Y)},
-                { Direction.S, coord => new Coord(coord.X, coord.Y - 1)},
-                { Direction.W, coord => new Coord(coord.X - 1, coord.Y)},
+        Dictionary<int, Func<Coord, Coord>> DirectionalMoves = 
+            new Dictionary<int, Func<Coord, Coord>> {
+                { Core.Direction.N, coord => new Coord(coord.X, coord.Y + 1)},
+                { Core.Direction.E, coord => new Coord(coord.X + 1, coord.Y)},
+                { Core.Direction.S, coord => new Coord(coord.X, coord.Y - 1)},
+                { Core.Direction.W, coord => new Coord(coord.X - 1, coord.Y)},
         };
 
         public void Transfer(TransferType transferType)
@@ -130,29 +100,12 @@ namespace Zip.MarsRover.Core
                     {
                         Coord = func(Coord);
                     }
-                    //switch (Direction)
-                    //{
-                    //    case Direction.N:
-                    //        Coord = new Coord(Coord.X, Coord.Y + 1);
-                    //        break;
-                    //    case Direction.E:
-                    //        Coord = new Coord(Coord.X + 1, Coord.Y);
-                    //        break;
-                    //    case Direction.S:
-                    //        Coord = new Coord(Coord.X, Coord.Y - 1);
-                    //        break;
-                    //    case Direction.W:
-                    //        Coord = new Coord(Coord.X - 1, Coord.Y);
-                    //        break;
-                    //    default:
-                    //        break;
-                    //}
                     break;
                 case TransferType.R:
-                    Direction = ((int)Direction < 3) ? Direction + 1 : Direction.N;
+                    Direction = (Direction < 3) ? Direction + 1 : Core.Direction.N;
                     break;
                 case TransferType.L:
-                    Direction = (Direction > 0) ? Direction - 1 : Direction.W;
+                    Direction = (Direction > 0) ? Direction - 1 : Core.Direction.W;
                     break;
             }
         }

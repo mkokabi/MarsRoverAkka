@@ -15,7 +15,7 @@ namespace Zip.MarsRover.UnitTests
             Position.TryParse(input, out Position position).Should().Be(result);
             position.Coord.X.Should().Be(x);
             position.Coord.Y.Should().Be(y);
-            position.Direction.Should().Be((Direction)direction);
+            position.Direction.Should().Be(direction);
         }
 
         [Theory]
@@ -33,7 +33,7 @@ namespace Zip.MarsRover.UnitTests
             position.Transfer(transfer);
             position.Coord.X.Should().Be(newX);
             position.Coord.Y.Should().Be(newY);
-            position.Direction.Should().Be((Direction)newDirection);
+            position.Direction.Should().Be(newDirection);
         }
     }
 }
