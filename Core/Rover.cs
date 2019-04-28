@@ -12,6 +12,7 @@ namespace Zip.MarsRover.Core
         public const string MovingRoverBeforeSettingInitialPosition = "Before moving rover, first set initial position.";
         public const string FirstPoistionOutOfPlateauError = "Rover can not start out of plateau.";
         public const string MovingRoverOutOfPlateauError = "Rover can not go out of plateau. Last move has been reverted";
+        public const string UnknownCommandError = "Mmm, not sure how to handle this.";
     }
 
     public class RoverMessages
@@ -37,11 +38,13 @@ namespace Zip.MarsRover.Core
         {
             Recover<string>(msg => DefinePlateau(msg), msg => msg.IsCoord());
             Recover<string>(msg => SetInitialPoistion(msg), msg => msg.IsPosition());
-            Recover<string>(msg => Move(msg));
+            Recover<string>(msg => Move(msg), msg => msg.IsTranserType());
 
             Command<string>(msg => Persist(msg, m => DefinePlateau(m)), msg => msg.IsCoord());
             Command<string>(msg => Persist(msg, m => SetInitialPoistion(m)), msg => msg.IsPosition());
-            Command<string>(msg => Persist(msg, m => Move(m)));
+            Command<string>(msg => Persist(msg, m => Move(m)), msg => msg.IsTranserType());
+
+            Command<string>(msg => Sender.Tell(new FailOperationResult(RoverErrors.UnknownCommandError)));
         }
 
         /// <summary>

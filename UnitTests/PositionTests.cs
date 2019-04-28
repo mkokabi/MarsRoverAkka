@@ -24,6 +24,16 @@ namespace Zip.MarsRover.UnitTests
         }
 
         [Theory]
+        [InlineData("", false)]
+        [InlineData("M", true)]
+        [InlineData(" MLR ", true)]
+        [InlineData(" 4 ", false)]
+        public void IsTransfer(string input, bool result)
+        {
+            input.IsTranserType().Should().Be(result);
+        }
+
+        [Theory]
         [InlineData(1, 1, Direction.N, TransferType.M, 1, 2, Direction.N)]
         [InlineData(1, 1, Direction.E, TransferType.M, 2, 1, Direction.E)]
         [InlineData(1, 1, Direction.S, TransferType.M, 1, 0, Direction.S)]

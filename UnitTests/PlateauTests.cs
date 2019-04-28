@@ -3,7 +3,7 @@ using System.Linq;
 using Xunit;
 using Zip.MarsRover.Core;
 
-namespace UnitTests
+namespace Zip.MarsRover.UnitTests
 {
     public class PlateauTests
     {

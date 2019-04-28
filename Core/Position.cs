@@ -103,9 +103,13 @@ namespace Zip.MarsRover.Core
 
     public static class PositionExtensions
     {
-        private const string regex = @"^\s*[0-9,.,-]+\s+[0-9,.,-]+\s+[N,E,S,W]\s*$";
+        private const string positionRegex = @"^\s*[0-9,.,-]+\s+[0-9,.,-]+\s+[N,E,S,W]\s*$";
 
-        public static bool IsPosition(this string st) => Regex.Match(st, regex).Success;
+        public static bool IsPosition(this string st) => Regex.Match(st, positionRegex).Success;
+
+        private const string transferRegex = @"^\s*[MLR]+\s*$";
+
+        public static bool IsTranserType(this string st) => Regex.Match(st, transferRegex).Success;
 
     }
 }

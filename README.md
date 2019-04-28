@@ -20,6 +20,10 @@ Rover responses with following *OperationResults*:
 
 The first 3 results derived from SuccessOperationResult which itself is derived OperationResult but the last one is directly derived from OperationResult.
 
+Here is an screenshot of the application
+
+![Application running](images/ScreenCapture001.png)
+
 ## Persistence
 To make the sample application easier to run, persistence is an optional feature which can is enabled by passing **persist** argument to the application. 
 To use the persistence feature the database (SQL) connection should be defined in the Sql.conf file. 
@@ -27,6 +31,14 @@ The format of this file is [HOCON](https://getakka.net/articles/concepts/configu
 The persistence model currently used is *Journaling*, assuming replaying all the messages to the *Rover* is required to get to the same state. 
 In other cases *Snapshot* model can be used (or even combined with *Journaling*) to save the storage and speed up retreiving to the initial stage. 
 
+Here is an screenshot of the EventJournal table
+
+![EventJournal table](images/ScreenCapture002.png)
+
 ## Tests
 The code has been covered with over 50 unit tests. 
 There is an automated build setup on [appveyor](https://www.appveyor.com/) 
+
+Here is an screenshot of the unit tests:
+
+![Unit tests](images/ScreenCapture003.png)
