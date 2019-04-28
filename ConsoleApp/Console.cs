@@ -9,9 +9,11 @@ namespace Zip.MarsRover.ConsoleApp
         public const string ExitCommand = "exit";
 
         private readonly IActorRef rover;
+        private readonly ConsoleColor consoleColor;
 
         public Console(IActorRef rover)
         {
+            consoleColor = System.Console.ForegroundColor;
             this.rover = rover;
         }
 
@@ -19,15 +21,19 @@ namespace Zip.MarsRover.ConsoleApp
         {
             if (message is MovedOperationResult movedOperationResult)
             {
-                System.Console.WriteLine(movedOperationResult.Position);
+                ColoredWriteLine(movedOperationResult.Position.ToString(), ConsoleColor.Yellow);
             }
             else if (message is InitialPositionSetOperationResult positionSetOperationResult)
             {
-                System.Console.WriteLine(positionSetOperationResult.Position);
+                ColoredWriteLine(positionSetOperationResult.Position.ToString(), ConsoleColor.Cyan);
             }
             else if (message is PlateauSetOperationResult plateauSetOperationResult)
             {
-                System.Console.WriteLine(plateauSetOperationResult.Plateau);
+                ColoredWriteLine(plateauSetOperationResult.Plateau.ToString(), ConsoleColor.Green);
+            }
+            else if (message is FailOperationResult failOperationResult)
+            {
+                ColoredWriteLine(failOperationResult.Error, ConsoleColor.Red);
             }
             else
             {
@@ -36,6 +42,7 @@ namespace Zip.MarsRover.ConsoleApp
             var read = System.Console.ReadLine();
             if (!string.IsNullOrEmpty(read) && String.Equals(read, ExitCommand, StringComparison.OrdinalIgnoreCase))
             {
+                System.Console.ForegroundColor = consoleColor;
                 // shut down the system (acquire handle to system via
                 // this actors context)
                 Context.System.Terminate();
@@ -44,6 +51,13 @@ namespace Zip.MarsRover.ConsoleApp
 
             // send input to the console writer to process and print
             rover.Tell(read);
+        }
+
+        private void ColoredWriteLine(string message, ConsoleColor color)
+        {
+            System.Console.ForegroundColor = color;
+            System.Console.WriteLine(message);
+            System.Console.ForegroundColor = consoleColor;
         }
     }
 }

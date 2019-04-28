@@ -9,13 +9,28 @@ namespace Zip.MarsRover.UnitTests
         [Theory]
         [InlineData("5 10 E", true, 5, 10, Direction.E)]
         [InlineData("-5 10 N", true, -5, 10, Direction.N)]
+        [InlineData("-5 10", false, -5, 10, Direction.N)]
+        [InlineData("-5 10 NN", false, -5, 10, Direction.N)]
         [InlineData("  5  10  E  ", true, 5, 10, Direction.E)]
         public void Parse(string input, bool result, int x, int y, int direction)
         {
             Position.TryParse(input, out Position position).Should().Be(result);
-            position.Coord.X.Should().Be(x);
-            position.Coord.Y.Should().Be(y);
-            position.Direction.Should().Be(direction);
+            if (result)
+            {
+                position.Coord.X.Should().Be(x);
+                position.Coord.Y.Should().Be(y);
+                position.Direction.Should().Be(direction);
+            }
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("M", true)]
+        [InlineData(" MLR ", true)]
+        [InlineData(" 4 ", false)]
+        public void IsTransfer(string input, bool result)
+        {
+            input.IsTranserType().Should().Be(result);
         }
 
         [Theory]

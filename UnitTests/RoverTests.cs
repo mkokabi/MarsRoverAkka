@@ -90,7 +90,7 @@ namespace Zip.MarsRover.UnitTests
         }
 
         [Fact]
-        public void Rover_moving_out_of_plateau_should_fail()
+        public void Rover_moving_out_of_plateau_should_fail_and_revert_the_move()
         {
             var rover = Sys.ActorOf(Props.Create(() => new Rover()));
             rover.Tell("2 2");
@@ -100,6 +100,8 @@ namespace Zip.MarsRover.UnitTests
             var secondResult = ExpectMsg<SuccessOperationResult>();
             var thirdResult = ExpectMsg<FailOperationResult>();
             thirdResult.Error.Should().Be(RoverErrors.MovingRoverOutOfPlateauError);
+            rover.Tell("L");
+            var fourthResult = ExpectMsg<SuccessOperationResult>();
         }
     }
 }

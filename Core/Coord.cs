@@ -36,14 +36,10 @@ namespace Zip.MarsRover.Core
         {
             return $"{X} {Y}";
         }
-
-        private const string regex = @"^\s*[0-9,.,-]*\s*[0-9,.,-]*\s*$";
-
-        public static bool IsCoord(string st) => Regex.Match(st, regex).Success;
         
         public static bool TryParse(string st, out Coord coord)
         {
-            if (!IsCoord(st))
+            if (!st.IsCoord())
             {
                 coord = null;
                 return false;
@@ -56,5 +52,12 @@ namespace Zip.MarsRover.Core
 
             return true;
         }
+    }
+
+    public static class CoordExtensions
+    {
+        private const string regex = @"^\s*[0-9,.,-]+\s+[0-9,.,-]+\s*$";
+
+        public static bool IsCoord(this string st) => Regex.Match(st, regex).Success;
     }
 }

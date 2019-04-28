@@ -31,8 +31,6 @@ namespace Zip.MarsRover.Core
             Direction = direction;
         }
 
-        private const string regex = @"^\s*[0-9,.,-]*\s*[0-9,.,-]*\s*[N,E,S,W]\s*$";
-
         public override bool Equals(object obj)
         {
             return (obj is Position position)
@@ -56,8 +54,6 @@ namespace Zip.MarsRover.Core
             return $"{Coord} {Direction}";
         }
 
-        public static bool IsPosition(string st) => Regex.Match(st, regex).Success;
-
         static Dictionary<string, int> directionNames = new Dictionary<string, int>()
         {
             { "N", Core.Direction.N },
@@ -68,7 +64,7 @@ namespace Zip.MarsRover.Core
 
         public static bool TryParse(string st, out Position position)
         {
-            if (!IsPosition(st))
+            if (!st.IsPosition())
             {
                 position = null;
                 return false;
@@ -109,5 +105,17 @@ namespace Zip.MarsRover.Core
                     break;
             }
         }
+    }
+
+    public static class PositionExtensions
+    {
+        private const string positionRegex = @"^\s*[0-9,.,-]+\s+[0-9,.,-]+\s+[N,E,S,W]\s*$";
+
+        public static bool IsPosition(this string st) => Regex.Match(st, positionRegex).Success;
+
+        private const string transferRegex = @"^\s*[MLR]+\s*$";
+
+        public static bool IsTranserType(this string st) => Regex.Match(st, transferRegex).Success;
+
     }
 }

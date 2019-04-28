@@ -11,6 +11,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DA89A720
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{3C961EDE-2A50-473A-B437-A48EE15D434D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C7AE03D8-314D-4691-B2BA-AB7A05AC74AF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{D25A5D93-C6D4-4B00-BB81-AFE6260BD2C6}"
+	ProjectSection(SolutionItems) = preProject
+		images\ScreenCapture001.png = images\ScreenCapture001.png
+		images\ScreenCapture002.png = images\ScreenCapture002.png
+		images\ScreenCapture003.png = images\ScreenCapture003.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +47,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3C961EDE-2A50-473A-B437-A48EE15D434D} = {DA89A720-D1BA-4454-97B8-8442C216251A}
+		{D25A5D93-C6D4-4B00-BB81-AFE6260BD2C6} = {C7AE03D8-314D-4691-B2BA-AB7A05AC74AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {929099DC-9E3E-410A-B639-460507734302}
